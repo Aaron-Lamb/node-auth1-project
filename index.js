@@ -2,8 +2,9 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const session = require('express-session');
-const KnexSessionStore = require('connect-session-knex');
+const KnexSessionStore = require('connect-session-knex')(session);
 const database = require('./data/config');
+const userRouter = require('./users/user-router');
 
 const server = express();
 const port = process.env.PORT || 4000;
@@ -17,7 +18,12 @@ server.use(session({
     resave: false,
     secret: process.env.SECRET || "Some secret info",
     saveUninitialized: false,
+    store: new KnexSessionStore({
+        knex: database,
+        createtable: true,
+    }),
 }))
+server.use(userRouter);
 
 server.use((err, req, res, next) => {
     console.log(err);
