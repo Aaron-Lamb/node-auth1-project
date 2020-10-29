@@ -13,14 +13,10 @@ server.use(helmet());
 server.use(cors());
 
 server.use(session({
-    resave: false,
     name: "Wookie",
+    resave: false,
+    secret: process.env.SECRET || "Some secret info",
     saveUninitialized: false,
-    secret: process.env.SECRET,
-    store: new KnexSessionStore({
-        knex: database,
-        createTable: true
-    })
 }))
 
 server.use((err, req, res, next) => {
